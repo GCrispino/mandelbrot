@@ -45,14 +45,15 @@ namespace mandelbrot{
         std::cout << "c0: (" << c0.real() << ',' << c0.imag() << ")" << std::endl;
         std::cout << "c1: (" << c1.real() << ',' << c1.imag() << ")" << std::endl;
 
+
         #pragma omp parallel for
-        for (unsigned pixel_y = 0; pixel_y < h; ++pixel_y){
+        for (unsigned i = 0; i < w * h; ++i){
+            unsigned pixel_y = i / w;
             float y = c0.imag() + pixel_y * delta_y;
-            #pragma omp parallel for
-            for (unsigned pixel_x = 0; pixel_x < w; ++pixel_x){
-                float x = c0.real() + pixel_x * delta_x;
-                table[pixel_y][pixel_x] = mandelbrot_c(complex<float>(x,y),m);
-            }
+
+            unsigned pixel_x = i % w;
+            float x = c0.real() + pixel_x * delta_x;
+            table[pixel_y][pixel_x] = mandelbrot_c(complex<float>(x,y),m);
         }
 
     }
