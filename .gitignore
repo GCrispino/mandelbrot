@@ -1,0 +1,5 @@
+.syntastic_cpp_config
+*.png
+obj
+
+mbrot

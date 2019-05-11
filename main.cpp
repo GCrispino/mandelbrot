@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include <png.h>
 #include <png++/image.hpp>
+#include <omp.h>
 
 #define QUOTEME(x) QUOTEME_1(x)
 #define QUOTEME_1(x) #x
@@ -27,15 +27,21 @@ void print_table(unsigned w, unsigned h, unsigned ** table){
     }
 }
 
-png::image<png::gray_pixel> create_image(unsigned w, unsigned h, unsigned **table){
+png::image<png::rgb_pixel> create_image(unsigned w, unsigned h, unsigned **table){
 
-    png::image< png::gray_pixel > image(w, h);
+    png::image< png::rgb_pixel > image(w, h);
 
+    #pragma omp parallel for
     for (png::uint_32 y = 0; y < image.get_height(); ++y)
     {
         for (png::uint_32 x = 0; x < image.get_width(); ++x)
         {
-            image[y][x] = png::gray_pixel(240 - table[y][x] * 10);
+            if (table[y][x] == 0){
+                image[y][x] = png::rgb_pixel(30, 30, 30);
+            }
+            else{
+                image[y][x] = png::rgb_pixel(table[y][x] * 10, table[y][x] * 10, 200 + table[y][x]);
+            }
         }
     }
 
@@ -99,20 +105,22 @@ int main(int argc, char **argv){
 
     params args = parse_args(argc, argv);
 
-    const unsigned w = args.w, h = args.h, m = 200;
+    omp_set_num_threads(args.n_threads);
+
+    const unsigned w = args.w, h = args.h, m = 400;
 
     unsigned **table = new unsigned *[h];
     for (unsigned i = 0;i < h;++i)
         table[i] = new unsigned[w];
 
-	complex<float> c0(-2,-1),c1(1,1);
+	complex<float> c0(args.c0),c1(args.c1);
 
 	const float delta_x = (c1.real() - c0.real()) / w;
 	const float delta_y = (c1.imag() - c0.imag()) / h;
 
     mandelbrot::mandelbrot(c0,c1,delta_x,delta_y,w,h,m,table);
     
-    png::image< png::gray_pixel > image = create_image(w,h,table);
+    png::image< png::rgb_pixel > image = create_image(w,h,table);
     image.write(args.output_path);
 
     for (unsigned i = 0;i < h;++i){

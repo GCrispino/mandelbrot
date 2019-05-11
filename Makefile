@@ -1,5 +1,5 @@
 CC=nvcc
-CFLAGS=-I$(IDIR) --std=c++11 
+CFLAGS=-I$(IDIR) --std=c++11 -Xcompiler -fopenmp
 IDIR=lib
 LIBS=
 _DEPS=mandelbrot.hpp
