@@ -63,8 +63,20 @@ struct params {
     {}
 };
 
-mandelbrot::exec_mode get_exec_mode(const std::string &s){
-    return mandelbrot::exec_mode::CPU;
+mandelbrot::exec_mode get_exec_mode(const char * mode){
+    mandelbrot::exec_mode ex;
+    if (mode[0] == '0'){
+        ex = mandelbrot::exec_mode::CPU;
+    }
+    else if (mode[0] == '1'){
+        ex = mandelbrot::exec_mode::GPU;
+    }
+    else{
+        std::cerr << "Invalid execution mode (0 or 1 is allowed)!" << std::endl;
+        exit(1);
+    }
+
+    return ex;
 }
 
 struct params parse_args(int argc, char **argv){
@@ -92,7 +104,7 @@ struct params parse_args(int argc, char **argv){
 
     return params(
         c0,c1,
-        w, h, n_threads, get_exec_mode(std::string(argv[7])),argv[9]
+        w, h, n_threads, get_exec_mode(argv[7]),argv[9]
     );
 }
 
@@ -115,7 +127,7 @@ int main(int argc, char **argv){
 	const float delta_y = (c1.imag() - c0.imag()) / h;
 
     mandelbrot::mandelbrot(ex, args.n_threads, c0,c1,delta_x,delta_y,w,h,m,table);
-    
+     
     png::image< png::rgb_pixel > image = create_image(w,h,table);
     image.write(args.output_path);
 
