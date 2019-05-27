@@ -11,6 +11,13 @@
 #include <iostream>
 #include <omp.h>
 
+void cudaWrap(cudaError_t err){
+    if (err){
+        std::cerr << "Erro! " << cudaGetErrorString(err) << std::endl;
+        exit(err);
+    }
+}
+
 
 namespace mandelbrot{
     using COMPLEX::complex;
@@ -42,7 +49,7 @@ namespace mandelbrot{
         return 0;
     }
 
-    unsigned ** mandelbrot_cpu(
+    void mandelbrot_cpu(
         unsigned n_threads,
         complex<float> c0, complex<float> c1,
         float delta_x, float delta_y,
@@ -62,22 +69,61 @@ namespace mandelbrot{
             table[pixel_y][pixel_x] = mandelbrot_c(complex<float>(x,y),m);
         }
 
-        return table;
     }
 
 
-    __global__ void mbrot_gpu(){
+    __global__ void mbrot_gpu(
+        complex<float> *c0, complex<float> *c1,
+        float *delta_x, float *delta_y,
+        unsigned *w, unsigned *h, unsigned *m,
+        unsigned **table
+    ){
+        
     }
 
-    unsigned ** mandelbrot_gpu(
+    void mandelbrot_gpu(
         complex<float> c0, complex<float> c1,
         float delta_x, float delta_y,
         unsigned w, unsigned h, unsigned m,
         unsigned **table
     ){
         // usar threads como threads por bloco
+        complex<float> *d_c0, *d_c1;
+        unsigned *d_table;
+        unsigned *d_w, *d_h, *d_m;
 
-        return table;
+
+        // allocate memory for variables
+
+        // alloc table
+        // =========================================================
+        cudaWrap(cudaMalloc((void **) &d_table, sizeof(unsigned) * w * h));
+        // =========================================================
+
+        cudaWrap(cudaMalloc(&d_c0, sizeof(complex<float>)));
+        cudaWrap(cudaMalloc(&d_c1, sizeof(complex<float>)));
+        cudaWrap(cudaMalloc(&d_w, sizeof(unsigned)));
+        cudaWrap(cudaMalloc(&d_h, sizeof(unsigned)));
+        cudaWrap(cudaMalloc(&d_m, sizeof(unsigned)));
+        // =========================================================
+
+        // Memcpying
+        // =========================================================
+        cudaWrap(cudaMemcpy(d_c0, &c0, sizeof(complex<float>), cudaMemcpyHostToDevice));
+        cudaWrap(cudaMemcpy(d_c1,&c1, sizeof(complex<float>), cudaMemcpyHostToDevice));
+        cudaWrap(cudaMemcpy(d_w, &w, sizeof(unsigned), cudaMemcpyHostToDevice));
+        cudaWrap(cudaMemcpy(d_h, &h, sizeof(unsigned), cudaMemcpyHostToDevice));
+        cudaWrap(cudaMemcpy(d_m, &m, sizeof(unsigned), cudaMemcpyHostToDevice));
+        // =========================================================
+
+
+        cudaWrap(cudaFree(d_c0));
+        cudaWrap(cudaFree(d_c1));
+        cudaWrap(cudaFree(d_w));
+        cudaWrap(cudaFree(d_h));
+        cudaWrap(cudaFree(d_m));
+
+        cudaWrap(cudaFree(d_table));
     }
 
 
@@ -94,10 +140,11 @@ namespace mandelbrot{
 
         std::cout << "c0: (" << c0.real() << ',' << c0.imag() << ")" << std::endl;
         std::cout << "c1: (" << c1.real() << ',' << c1.imag() << ")" << std::endl;
+        std::cout << "Exec mode: " << ex << std::endl;
 
         switch(ex){
             case exec_mode::CPU:
-                table = mandelbrot_cpu(
+                mandelbrot_cpu(
                     n_threads,
                     c0, c1,
                     delta_x, delta_y,
@@ -106,7 +153,7 @@ namespace mandelbrot{
                 );
                 break;
             case exec_mode::GPU:
-                table = mandelbrot_gpu(
+                mandelbrot_gpu(
                     c0, c1,
                     delta_x, delta_y,
                     w, h, m,
