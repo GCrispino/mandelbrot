@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <png++/image.hpp>
-#include <omp.h>
 
 #define QUOTEME(x) QUOTEME_1(x)
 #define QUOTEME_1(x) #x
@@ -16,6 +15,7 @@
 #include INCLUDE_FILE(HEADER)
 
 #include "mandelbrot.hpp"
+
 
 void print_table(unsigned w, unsigned h, unsigned ** table){
     for (unsigned i = 0;i < h; ++i){
@@ -40,7 +40,7 @@ png::image<png::rgb_pixel> create_image(unsigned w, unsigned h, unsigned **table
                 image[y][x] = png::rgb_pixel(30, 30, 30);
             }
             else{
-                image[y][x] = png::rgb_pixel(table[y][x] * 10, table[y][x] * 10, 200 + table[y][x]);
+                image[y][x] = png::rgb_pixel(table[y][x] * 2, table[y][x] * 2, 170 + table[y][x] * 2);
             }
         }
     }
@@ -48,27 +48,23 @@ png::image<png::rgb_pixel> create_image(unsigned w, unsigned h, unsigned **table
     return image;
 }
 
-enum exec_mode{
-    CPU = 0,
-    GPU = 1
-};
 
 struct params {
     COMPLEX::complex<float> c0,c1;
     unsigned w,h,n_threads;
-    exec_mode ex;
+    mandelbrot::exec_mode ex;
     std::string output_path;
 
     params(
         const COMPLEX::complex<float> &c0, const COMPLEX::complex<float> &c1,
         unsigned w, unsigned h, unsigned n_threads,
-        exec_mode ex, const std::string &output_path
+        mandelbrot::exec_mode ex, const std::string &output_path
     ): c0(c0), c1(c1), w(w), h(h), n_threads(n_threads), ex(ex), output_path(output_path)
     {}
 };
 
-exec_mode get_exec_mode(const std::string &s){
-    return exec_mode::CPU;
+mandelbrot::exec_mode get_exec_mode(const std::string &s){
+    return mandelbrot::exec_mode::CPU;
 }
 
 struct params parse_args(int argc, char **argv){
@@ -105,9 +101,9 @@ int main(int argc, char **argv){
 
     params args = parse_args(argc, argv);
 
-    omp_set_num_threads(args.n_threads);
 
-    const unsigned w = args.w, h = args.h, m = 400;
+    const mandelbrot::exec_mode ex = args.ex;
+    const unsigned w = args.w, h = args.h, m = 250;
 
     unsigned **table = new unsigned *[h];
     for (unsigned i = 0;i < h;++i)
@@ -118,7 +114,7 @@ int main(int argc, char **argv){
 	const float delta_x = (c1.real() - c0.real()) / w;
 	const float delta_y = (c1.imag() - c0.imag()) / h;
 
-    mandelbrot::mandelbrot(c0,c1,delta_x,delta_y,w,h,m,table);
+    mandelbrot::mandelbrot(ex, args.n_threads, c0,c1,delta_x,delta_y,w,h,m,table);
     
     png::image< png::rgb_pixel > image = create_image(w,h,table);
     image.write(args.output_path);
