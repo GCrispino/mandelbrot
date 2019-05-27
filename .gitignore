@@ -1,4 +1,4 @@
-.syntastic_cpp_config
+.syntastic_*_config
 *.png
 obj
 

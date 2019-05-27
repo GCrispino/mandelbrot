@@ -2,7 +2,7 @@ CC=nvcc
 CFLAGS=-I$(IDIR) --std=c++11 -Xcompiler -fopenmp
 IDIR=lib
 LIBS=
-_DEPS=mandelbrot.hpp
+_DEPS=mandelbrot.cuh
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 MACROS=
 
@@ -11,7 +11,8 @@ ODIR=obj
 _OBJ = main.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-$(ODIR)/%.o: %.cpp $(DEPS)
+#$(ODIR)/%.o: %.cpp $(DEPS)
+$(ODIR)/%.o: %.cu $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) `libpng-config --cflags`
 
 all: makedir mbrot

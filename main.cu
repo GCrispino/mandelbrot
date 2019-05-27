@@ -5,8 +5,8 @@
 #define QUOTEME(x) QUOTEME_1(x)
 #define QUOTEME_1(x) #x
 #ifdef __CUDACC__
-#   define INCLUDE_FILE(x) QUOTEME(thurst/complex.h)
-#   define COMPLEX thurst
+#   define INCLUDE_FILE(x) QUOTEME(thrust/complex.h)
+#   define COMPLEX thrust
 #else
 #   define INCLUDE_FILE(x) QUOTEME(complex)
 #   define COMPLEX std 
@@ -14,7 +14,7 @@
 
 #include INCLUDE_FILE(HEADER)
 
-#include "mandelbrot.hpp"
+#include "mandelbrot.cuh"
 
 
 void print_table(unsigned w, unsigned h, unsigned ** table){
