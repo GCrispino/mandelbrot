@@ -54,7 +54,7 @@ namespace mandelbrot{
         complex<float> c0, complex<float> c1,
         float delta_x, float delta_y,
         unsigned w, unsigned h, unsigned m,
-        unsigned **table
+        unsigned *table
     ){
 
         omp_set_num_threads(n_threads);
@@ -66,7 +66,8 @@ namespace mandelbrot{
 
             unsigned pixel_x = i % w;
             float x = c0.real() + pixel_x * delta_x;
-            table[pixel_y][pixel_x] = mandelbrot_c(complex<float>(x,y),m);
+//            res += a[index_y * n + i] * b[index_x + i * n];
+            table[pixel_x * h + pixel_y] = mandelbrot_c(complex<float>(x,y),m);
         }
 
     }
@@ -76,7 +77,7 @@ namespace mandelbrot{
         complex<float> *c0, complex<float> *c1,
         float *delta_x, float *delta_y,
         unsigned *w, unsigned *h, unsigned *m,
-        unsigned **table
+        unsigned *table
     ){
         
     }
@@ -85,7 +86,7 @@ namespace mandelbrot{
         complex<float> c0, complex<float> c1,
         float delta_x, float delta_y,
         unsigned w, unsigned h, unsigned m,
-        unsigned **table
+        unsigned *table
     ){
         // usar threads como threads por bloco
         complex<float> *d_c0, *d_c1;
@@ -116,6 +117,8 @@ namespace mandelbrot{
         cudaWrap(cudaMemcpy(d_m, &m, sizeof(unsigned), cudaMemcpyHostToDevice));
         // =========================================================
 
+    
+        cudaWrap(cudaMemcpy(table, d_table, sizeof(unsigned) * w * h, cudaMemcpyDeviceToHost));
 
         cudaWrap(cudaFree(d_c0));
         cudaWrap(cudaFree(d_c1));
@@ -132,7 +135,7 @@ namespace mandelbrot{
         complex<float> c0, complex<float> c1,
         float delta_x, float delta_y,
         unsigned w, unsigned h, unsigned m,
-        unsigned **table
+        unsigned *table
     ){
 
         std::cout << "Delta x: " << delta_x << std::endl;

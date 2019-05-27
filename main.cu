@@ -20,14 +20,14 @@
 void print_table(unsigned w, unsigned h, unsigned ** table){
     for (unsigned i = 0;i < h; ++i){
         for (unsigned j = 0;j < w; ++j){
-            std::cout << table[i][j]  << ' '; 
+            std::cout << table[i * h + j]  << ' '; 
         }
 
         std::cout << std::endl; 
     }
 }
 
-png::image<png::rgb_pixel> create_image(unsigned w, unsigned h, unsigned **table){
+png::image<png::rgb_pixel> create_image(unsigned w, unsigned h, unsigned *table){
 
     png::image< png::rgb_pixel > image(w, h);
 
@@ -36,11 +36,11 @@ png::image<png::rgb_pixel> create_image(unsigned w, unsigned h, unsigned **table
     {
         for (png::uint_32 x = 0; x < image.get_width(); ++x)
         {
-            if (table[y][x] == 0){
+            if (table[x * h + y] == 0){
                 image[y][x] = png::rgb_pixel(30, 30, 30);
             }
             else{
-                image[y][x] = png::rgb_pixel(table[y][x] * 2, table[y][x] * 2, 170 + table[y][x] * 2);
+                image[y][x] = png::rgb_pixel(table[x * h + y] * 2, table[x * h + y] * 2, 170 + table[x * h + y] * 2);
             }
         }
     }
@@ -117,9 +117,7 @@ int main(int argc, char **argv){
     const mandelbrot::exec_mode ex = args.ex;
     const unsigned w = args.w, h = args.h, m = 250;
 
-    unsigned **table = new unsigned *[h];
-    for (unsigned i = 0;i < h;++i)
-        table[i] = new unsigned[w];
+    unsigned *table = new unsigned[w * h];
 
 	complex<float> c0(args.c0),c1(args.c1);
 
@@ -131,9 +129,6 @@ int main(int argc, char **argv){
     png::image< png::rgb_pixel > image = create_image(w,h,table);
     image.write(args.output_path);
 
-    for (unsigned i = 0;i < h;++i){
-        delete[] table[i];
-    }
     delete[] table;
 
 	return 0;
