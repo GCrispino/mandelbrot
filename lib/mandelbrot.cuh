@@ -66,8 +66,7 @@ namespace mandelbrot{
 
             unsigned pixel_x = i % w;
             float x = c0.real() + pixel_x * delta_x;
-//            res += a[index_y * n + i] * b[index_x + i * n];
-            table[pixel_x * h + pixel_y] = mandelbrot_c(complex<float>(x,y),m);
+            table[pixel_y * w + pixel_x] = mandelbrot_c(complex<float>(x,y),m);
         }
 
     }
