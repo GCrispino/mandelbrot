@@ -1,4 +1,7 @@
 CC=nvcc
+ifdef ALT_CC
+	CC:=$(ALT_CC)
+endif
 CFLAGS=-I$(IDIR) --std=c++11 
 ifeq ($(CC), nvcc)
 	CFLAGS+= -Xcompiler -fopenmp

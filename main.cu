@@ -12,7 +12,7 @@
 #   define COMPLEX std 
 #endif
 
-#include INCLUDE_FILE(HEADER)
+#include INCLUDE_FILE()
 
 #include "mandelbrot.cuh"
 
