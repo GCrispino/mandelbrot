@@ -1,5 +1,7 @@
-#define QUOTEME(x) QUOTEME_1(x)
-#define QUOTEME_1(x) #x
+#ifndef MANDELBROT_COMMON_H
+#   include "mandelbrot_common.cuh"
+#endif
+
 #ifdef __CUDACC__
 #   define __DEVICE__ __device__
 #   define __HOST__ __host__
@@ -22,28 +24,6 @@ namespace mandelbrot{
         CPU = 0,
         GPU = 1
     };
-    
-
-    /**
-     * Computes z for max iteration number m, and returns the j
-     * 	norm(z) > 2
-     */
-    unsigned __DEVICE__ __HOST__ mandelbrot_c(complex<float> c, unsigned m){
-        
-        complex<float> z(0,0);
-        float norm_z;
-
-        for (unsigned j = 1;j < m;++j){
-            z = pow(z,2) + c;
-            norm_z = norm(z);
-            if (norm_z > 2){
-                return j;
-            }
-        }
-
-        
-        return 0;
-    }
 
     void mandelbrot_cpu(
         unsigned n_threads,
