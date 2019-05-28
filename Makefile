@@ -11,7 +11,7 @@ ODIR=obj
 _OBJ = main.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-#$(ODIR)/%.o: %.cpp $(DEPS)
+$(ODIR)/%.o: %.cpp $(DEPS)
 $(ODIR)/%.o: %.cu $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) `libpng-config --cflags`
 
