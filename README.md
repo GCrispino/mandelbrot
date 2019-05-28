@@ -9,7 +9,12 @@ The exercise solution should contain code that calculates the mandelbrot set ima
 
 ## Building
 
-To build the code you should have the `nvcc` compiler installed. The `Makefile` uses it even if you just use OpenMP.
+The build process uses the `nvcc` compiler as default, to do GPU processing. If you don't have it installed, you can change the compiler with the env variable `ALT_CC` (tested only with nvcc and g++). 
+Ex: 
+```bash
+$ make clean
+$ ALT_CC=g++ make
+```
 
 If you do, just go to the `src` folder and run `make`:
 
