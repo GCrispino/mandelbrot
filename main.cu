@@ -14,6 +14,10 @@
 #   define COMPLEX std 
 #endif
 
+#ifndef REAL
+#   define REAL float
+#endif
+
 #include INCLUDE_FILE()
 
 #include "mandelbrot.cuh"
@@ -53,13 +57,13 @@ png::image<png::rgb_pixel> create_image(unsigned w, unsigned h, unsigned *table)
 
 
 struct params {
-    COMPLEX::complex<float> c0,c1;
+    COMPLEX::complex<REAL> c0,c1;
     unsigned w,h,n_threads;
     mandelbrot::exec_mode ex;
     std::string output_path;
 
     params(
-        const COMPLEX::complex<float> &c0, const COMPLEX::complex<float> &c1,
+        const COMPLEX::complex<REAL> &c0, const COMPLEX::complex<REAL> &c1,
         unsigned w, unsigned h, unsigned n_threads,
         mandelbrot::exec_mode ex, const std::string &output_path
     ): c0(c0), c1(c1), w(w), h(h), n_threads(n_threads), ex(ex), output_path(output_path)
@@ -100,13 +104,13 @@ struct params parse_args(int argc, char **argv){
         exit(1);
     }
 
-    float 
+    REAL 
         c0_real = atof(argv[1]), c0_imag = atof(argv[2]),
         c1_real = atof(argv[3]), c1_imag = atof(argv[4]);
 
     unsigned w = atoi(argv[5]), h = atoi(argv[6]), n_threads = atoi(argv[8]);
 
-    const complex<float> c0(c0_real, c0_imag), c1(c1_real, c1_imag);
+    const complex<REAL> c0(c0_real, c0_imag), c1(c1_real, c1_imag);
 
     std::cout << c0 << ' ' << c1 << ' ' << w << ' ' << h << std::endl;
 
@@ -126,10 +130,10 @@ int main(int argc, char **argv){
 
     unsigned *table = new unsigned[w * h];
 
-	complex<float> c0(args.c0),c1(args.c1);
+	complex<REAL> c0(args.c0),c1(args.c1);
 
-	const float delta_x = (c1.real() - c0.real()) / w;
-	const float delta_y = (c1.imag() - c0.imag()) / h;
+	const REAL delta_x = (c1.real() - c0.real()) / w;
+	const REAL delta_y = (c1.imag() - c0.imag()) / h;
 
     mandelbrot::mandelbrot(ex, args.n_threads, c0,c1,delta_x,delta_y,w,h,m,table);
      

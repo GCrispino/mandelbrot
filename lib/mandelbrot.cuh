@@ -27,8 +27,8 @@ namespace mandelbrot{
 
     void mandelbrot_cpu(
         unsigned n_threads,
-        complex<float> c0, complex<float> c1,
-        float delta_x, float delta_y,
+        complex<REAL> c0, complex<REAL> c1,
+        REAL delta_x, REAL delta_y,
         unsigned w, unsigned h, unsigned m,
         unsigned *table
     ){
@@ -38,19 +38,19 @@ namespace mandelbrot{
         #pragma omp parallel for
         for (unsigned i = 0; i < w * h; ++i){
             unsigned pixel_y = i / w;
-            float y = c0.imag() + pixel_y * delta_y;
+            REAL y = c0.imag() + pixel_y * delta_y;
 
             unsigned pixel_x = i % w;
-            float x = c0.real() + pixel_x * delta_x;
-            table[i] = mandelbrot_c(complex<float>(x,y),m);
+            REAL x = c0.real() + pixel_x * delta_x;
+            table[i] = mandelbrot_c(complex<REAL>(x,y),m);
         }
 
     }
 
     void mandelbrot(
         exec_mode ex, unsigned n_threads,
-        complex<float> c0, complex<float> c1,
-        float delta_x, float delta_y,
+        complex<REAL> c0, complex<REAL> c1,
+        REAL delta_x, REAL delta_y,
         unsigned w, unsigned h, unsigned m,
         unsigned *table
     ){

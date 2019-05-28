@@ -14,8 +14,8 @@ namespace mandelbrot{
     }
 
     __global__ void mbrot_gpu(
-            complex<float> *c0, complex<float> *c1,
-            float *delta_x, float *delta_y,
+            complex<REAL> *c0, complex<REAL> *c1,
+            REAL *delta_x, REAL *delta_y,
             unsigned *w, unsigned *h, unsigned *m,
             unsigned *table
         ){
@@ -28,25 +28,25 @@ namespace mandelbrot{
             }
 
             unsigned pixel_y = index / (*w);
-            float y = c0->imag() + pixel_y * (*delta_y);
+            REAL y = c0->imag() + pixel_y * (*delta_y);
 
             unsigned pixel_x = index % (*w);
-            float x = c0->real() + pixel_x * (*delta_x);
+            REAL x = c0->real() + pixel_x * (*delta_x);
 
-            table[pixel_y * (*w) + pixel_x] = mandelbrot_c(complex<float>(x,y),*m);
+            table[pixel_y * (*w) + pixel_x] = mandelbrot_c(complex<REAL>(x,y),*m);
 
         }
 
     void mandelbrot_gpu(
             unsigned n_threads,
-            complex<float> c0, complex<float> c1,
-            float delta_x, float delta_y,
+            complex<REAL> c0, complex<REAL> c1,
+            REAL delta_x, REAL delta_y,
             unsigned w, unsigned h, unsigned m,
             unsigned *table
         ){
             // usar threads como threads por bloco
-            complex<float> *d_c0, *d_c1;
-            float *d_delta_x, *d_delta_y;
+            complex<REAL> *d_c0, *d_c1;
+            REAL *d_delta_x, *d_delta_y;
             unsigned *d_table;
             unsigned *d_w, *d_h, *d_m;
 
@@ -58,21 +58,21 @@ namespace mandelbrot{
             cudaWrapError(cudaMalloc((void **) &d_table, sizeof(unsigned) * w * h));
             // =========================================================
 
-            cudaWrapError(cudaMalloc(&d_c0, sizeof(complex<float>)));
-            cudaWrapError(cudaMalloc(&d_c1, sizeof(complex<float>)));
+            cudaWrapError(cudaMalloc(&d_c0, sizeof(complex<REAL>)));
+            cudaWrapError(cudaMalloc(&d_c1, sizeof(complex<REAL>)));
             cudaWrapError(cudaMalloc(&d_w, sizeof(unsigned)));
-            cudaWrapError(cudaMalloc(&d_delta_x, sizeof(float)));
-            cudaWrapError(cudaMalloc(&d_delta_y, sizeof(float)));
+            cudaWrapError(cudaMalloc(&d_delta_x, sizeof(REAL)));
+            cudaWrapError(cudaMalloc(&d_delta_y, sizeof(REAL)));
             cudaWrapError(cudaMalloc(&d_h, sizeof(unsigned)));
             cudaWrapError(cudaMalloc(&d_m, sizeof(unsigned)));
             // =========================================================
 
             // Memcpying
             // =========================================================
-            cudaWrapError(cudaMemcpy(d_c0, &c0, sizeof(complex<float>), cudaMemcpyHostToDevice));
-            cudaWrapError(cudaMemcpy(d_c1,&c1, sizeof(complex<float>), cudaMemcpyHostToDevice));
-            cudaWrapError(cudaMemcpy(d_delta_x, &delta_x, sizeof(float), cudaMemcpyHostToDevice));
-            cudaWrapError(cudaMemcpy(d_delta_y, &delta_y, sizeof(float), cudaMemcpyHostToDevice));
+            cudaWrapError(cudaMemcpy(d_c0, &c0, sizeof(complex<REAL>), cudaMemcpyHostToDevice));
+            cudaWrapError(cudaMemcpy(d_c1,&c1, sizeof(complex<REAL>), cudaMemcpyHostToDevice));
+            cudaWrapError(cudaMemcpy(d_delta_x, &delta_x, sizeof(REAL), cudaMemcpyHostToDevice));
+            cudaWrapError(cudaMemcpy(d_delta_y, &delta_y, sizeof(REAL), cudaMemcpyHostToDevice));
             cudaWrapError(cudaMemcpy(d_w, &w, sizeof(unsigned), cudaMemcpyHostToDevice));
             cudaWrapError(cudaMemcpy(d_h, &h, sizeof(unsigned), cudaMemcpyHostToDevice));
             cudaWrapError(cudaMemcpy(d_m, &m, sizeof(unsigned), cudaMemcpyHostToDevice));

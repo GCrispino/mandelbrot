@@ -2,7 +2,11 @@ CC=nvcc
 ifdef ALT_CC
 	CC:=$(ALT_CC)
 endif
-CFLAGS=-I$(IDIR) --std=c++11 
+DEFAULT_REAL=float
+ifndef REAL
+	REAL=$(DEFAULT_REAL)
+endif
+CFLAGS=-I$(IDIR) --std=c++11 -DREAL=$(REAL)
 ifeq ($(CC), nvcc)
 	CFLAGS+= -Xcompiler -fopenmp
 else
