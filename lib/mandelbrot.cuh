@@ -4,13 +4,11 @@
 #   define __DEVICE__ __device__
 #   define __HOST__ __host__
 #   define MANDELBROT_FN mandelbrot_gpu
-#   define INCLUDE_FILE(x) QUOTEME(thrust/complex.h)
-#   define COMPLEX thrust
+#   include "mandelbrot_gpu.cuh"
 #else
 #   define __DEVICE__
 #   define __HOST__
 #   define MANDELBROT_FN mandelbrot_cpu
-#   define INCLUDE_FILE(x) QUOTEME(complex)
 #   define COMPLEX std 
 #endif
 
