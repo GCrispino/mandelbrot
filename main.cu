@@ -5,9 +5,11 @@
 #define QUOTEME(x) QUOTEME_1(x)
 #define QUOTEME_1(x) #x
 #ifdef __CUDACC__
+#   define  __CUDA__ 1
 #   define INCLUDE_FILE(x) QUOTEME(thrust/complex.h)
 #   define COMPLEX thrust
 #else
+#   define  __CUDA__ 0
 #   define INCLUDE_FILE(x) QUOTEME(complex)
 #   define COMPLEX std 
 #endif
@@ -70,6 +72,11 @@ mandelbrot::exec_mode get_exec_mode(const char * mode){
         ex = mandelbrot::exec_mode::CPU;
     }
     else if (mode[0] == '1'){
+        if (!__CUDA__){
+            std::cerr << "WARNING! You chose to use GPU execution without using nvcc" << std::endl;
+            std::cerr << "\tDefaulting to CPU execution..." << std::endl;
+            return mandelbrot::exec_mode::CPU;
+        }
         ex = mandelbrot::exec_mode::GPU;
     }
     else{
@@ -113,7 +120,6 @@ int main(int argc, char **argv){
     using COMPLEX::complex;
 
     params args = parse_args(argc, argv);
-
 
     const mandelbrot::exec_mode ex = args.ex;
     const unsigned w = args.w, h = args.h, m = 250;
