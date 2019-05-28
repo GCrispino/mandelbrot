@@ -42,7 +42,7 @@ namespace mandelbrot{
 
             unsigned pixel_x = i % w;
             float x = c0.real() + pixel_x * delta_x;
-            table[pixel_y * w + pixel_x] = mandelbrot_c(complex<float>(x,y),m);
+            table[i] = mandelbrot_c(complex<float>(x,y),m);
         }
 
     }
