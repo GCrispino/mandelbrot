@@ -46,3 +46,13 @@ Where:
 
 Running this will generate a PNG image visualization of the mandelbrot set size with dimensionns WxH, limited by C0 and C1 complex numbers regions.
 
+### Example
+Running the following command will generate this image:
+
+```bash
+$ ./mbrot 0.03 -0.65 0.1 -0.6 1920 1080 1 256 examples/0.03_-0.65_0.1_-0.6.png
+```
+
+![Example image](https://github.com/GCrispino/mandelbrot/raw/master/examples/0.03_-0.65_0.1_-0.6.png)
+
+More examples are located in the `examples` folder.
