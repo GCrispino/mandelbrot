@@ -14,7 +14,7 @@ else
 endif
 IDIR=lib
 LIBS=
-_DEPS=mandelbrot.cuh
+_DEPS=*.cu*
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 MACROS=
 ifeq ($(CC), nvcc)
