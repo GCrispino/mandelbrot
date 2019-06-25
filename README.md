@@ -40,7 +40,7 @@ Where:
 * `C1_IMAG`: imaginary part of the C1 complex number;
 * `W`: output image's width;
 * `H`: output image's height;
-* `EXEC_MODE`: 0 for executing on CPU, 1 for GPU;
+* `EXEC_MODE`: "cpu" for executing on CPU, "gpu" for GPU;
 * `N_THREADS`: number of threads for parallelization. If executing on GPU, number of threads for each block;
 * `OUTPUT_PATH`: output path for generated image.
 
