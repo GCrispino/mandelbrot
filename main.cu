@@ -72,10 +72,13 @@ struct params {
 
 mandelbrot::exec_mode get_exec_mode(const char * mode){
     mandelbrot::exec_mode ex;
-    if (mode[0] == '0'){
+    std::string mode_upper(mode);
+    for (auto & c: mode_upper) c = toupper(c);
+
+    if (!mode_upper.compare("CPU")){
         ex = mandelbrot::exec_mode::CPU;
     }
-    else if (mode[0] == '1'){
+    else if (!mode_upper.compare("GPU")){
         if (!__CUDA__){
             std::cerr << "WARNING! You chose to use GPU execution without using nvcc" << std::endl;
             std::cerr << "\tDefaulting to CPU execution..." << std::endl;
@@ -84,7 +87,7 @@ mandelbrot::exec_mode get_exec_mode(const char * mode){
         ex = mandelbrot::exec_mode::GPU;
     }
     else{
-        std::cerr << "Invalid execution mode (0 or 1 is allowed)!" << std::endl;
+        std::cerr << "Invalid execution mode (\"cpu\" or \"gpu\" is allowed)!" << std::endl;
         exit(1);
     }
 

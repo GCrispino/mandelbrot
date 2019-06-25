@@ -21,8 +21,8 @@ namespace mandelbrot{
     using COMPLEX::complex;
 
     enum exec_mode{
-        CPU = 0,
-        GPU = 1
+        CPU,
+        GPU
     };
 
     void mandelbrot_cpu(
